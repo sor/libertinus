@@ -9,7 +9,6 @@ The cleanest way to install the Python dependencies is to use a [virtual environ
 
 (There are also [optional dependencies](#optional-dependencies) which are not required for the basic contribution flow.)
 
-The source files are under the `sources` subdirectory.
 The `.sfd` files are FontForge source font format and should be edited with [FontForge][fontforge].
 The `.fea` files are [OpenType feature files][fea] and should be edited by a plain text editor.
 

@@ -9,9 +9,8 @@ SHELL = bash
 
 DIST = $(NAME)-$(VERSION)
 
-SOURCEDIR = sources
 BUILDDIR = build
-GSUB = $(SOURCEDIR)/features/gsub.fea
+GSUB = features/gsub.fea
 DOCSDIR = documentation
 TOOLSDIR = tools
 
@@ -31,7 +30,7 @@ SANS_STYLES  := Regular Bold Italic
 REGULAR_ONLY := Math Mono Keyboard SerifDisplay SerifInitials
 
 ifeq ($(ALLFONTS),true)
-	FONTS := $(notdir $(basename $(wildcard $(SOURCEDIR)/*.sfd)))
+	FONTS := $(notdir $(basename $(wildcard *.sfd)))
 else
 	FONTS ?= $(foreach STYLE,$(SERIF_STYLES),$(NAME)Serif-$(STYLE)) \
 			 $(foreach STYLE,$(SANS_STYLES),$(NAME)Sans-$(STYLE)) \
@@ -39,7 +38,7 @@ else
 endif
 
 # Generate lists of various intermediate forms
-SFD = $(addsuffix .sfd,$(addprefix $(SOURCEDIR)/,$(FONTS)))
+SFD = $(addsuffix .sfd,$(FONTS))
 NRM = $(addsuffix .nrm,$(addprefix $(BUILDDIR)/,$(FONTS)))
 CHK = $(addsuffix .chk,$(addprefix $(BUILDDIR)/,$(FONTS)))
 
@@ -65,7 +64,7 @@ nofea=$(strip $(foreach f,Initials Keyboard Mono,$(findstring $f,$1)))
 $(BUILDDIR):
 	mkdir -p $@
 
-$(BUILDDIR)/%.otl.otf: $(SOURCEDIR)/%.sfd $(GSUB) $(BUILD) | $(BUILDDIR)
+$(BUILDDIR)/%.otl.otf: %.sfd $(GSUB) $(BUILD) | $(BUILDDIR)
 	$(info       BUILD  $(*F))
 	$(PY) $(BUILD) \
 		--input=$< \
@@ -85,12 +84,12 @@ $(BUILDDIR)/%.subr.otf: $(BUILDDIR)/%.hint.otf
 %.otf: $(BUILDDIR)/%.subr.otf
 	cp $< $@
 
-$(BUILDDIR)/%.nrm: $(SOURCEDIR)/%.sfd $(NORMALIZE) | $(BUILDDIR)
+$(BUILDDIR)/%.nrm: %.sfd $(NORMALIZE) | $(BUILDDIR)
 	$(info   NORMALIZE  $(*F))
 	$(PY) $(NORMALIZE) $< $@
 	if [ "`diff -u $< $@`" ]; then cp $@ $<; touch $@; fi
 
-$(BUILDDIR)/%.chk: $(SOURCEDIR)/%.sfd $(NORMALIZE) | $(BUILDDIR)
+$(BUILDDIR)/%.chk: %.sfd $(NORMALIZE) | $(BUILDDIR)
 	$(info   NORMALIZE  $(*F))
 	$(PY) $(NORMALIZE) $< $@
 	diff -u $< $@ || (rm -rf $@ && false)
